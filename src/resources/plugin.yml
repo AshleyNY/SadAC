@@ -1,0 +1,6 @@
+name: SadAC
+main: me.sad.ac.SadAC
+version: 1.0.1
+api: [1.0.5]
+
+author: Sadami

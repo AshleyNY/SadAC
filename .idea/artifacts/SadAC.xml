@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="SadAC">
+    <output-path>$PROJECT_DIR$/../../Server/plugins</output-path>
+    <root id="archive" name="SadAC.jar">
+      <element id="module-output" name="SadAC" />
+    </root>
+  </artifact>
+</component>

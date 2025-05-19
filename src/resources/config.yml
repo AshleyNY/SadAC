@@ -1,0 +1,21 @@
+checks:
+  flight:
+    enabled: true     # 是否开启飞行速度检测
+    max-speed: 750    # 最大速度（单位：Sad值区间在600-750比较ok）
+  speed:
+    enabled: true     # 是否开启速度检测
+    max-speed: 750    # 最大速度（单位：Sad值区间在600-750比较ok）
+  wallhack:
+    enabled: true       # 是否开启穿墙检测
+    steps: 3           # 路径采样步数（数值越大越精确，性能消耗越高）
+  instant-break:
+    enabled: true       # 是否开启秒挖检测
+    min-break-time: 10 # 挖一个方块所需的最低时间（毫秒）
+  reach:
+    enabled: true       # 是否开启 Reach 检测
+    max-reach: 5        # 最大 Reach 距离
+  # 新增：Lag检测配置
+  lag:
+    enabled: true        # 是否开启 Lag 检测
+    redstone-update-interval: 50    # 高频红石更新间隔阈值（毫秒）
+    max-entities-per-chunk: 50      # 单个区块最大实体数阈值
