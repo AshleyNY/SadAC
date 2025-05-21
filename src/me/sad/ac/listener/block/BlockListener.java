@@ -9,12 +9,13 @@ import cn.nukkit.event.player.PlayerInteractEvent;
 import cn.nukkit.utils.Config;
 import cn.nukkit.utils.TextFormat;
 import me.sad.ac.SadAC;
+import me.sad.ac.listener.Reloadable;
 
 import java.util.HashMap;
 import java.util.Map;
 
 // 实现 Listener 接口，表明这是一个事件监听器类
-public class BlockListener implements Listener {
+public class BlockListener implements Listener, Reloadable {
 
     private final SadAC plugin;
     // 存储玩家开始破坏方块的时间，键为玩家和方块组合
@@ -28,7 +29,7 @@ public class BlockListener implements Listener {
         this.plugin = plugin;
         reloadConfig();
     }
-
+@Override
     public void reloadConfig() {
         Config config = plugin.getCustomConfig();
         this.isCheckEnabled = config.getBoolean("checks.instant-break.enabled", true);
@@ -42,11 +43,11 @@ public class BlockListener implements Listener {
      */
     private long getMinBreakTimeFromConfig(Config config) {
         try {
-            return config.getLong("checks.instant-break.min-break-time", 500);
+            return config.getLong("checks.instant-break.min-break-time", 10);
         } catch (Exception e) {
             // 记录错误日志并使用默认值
             plugin.getLogger().info("Failed to load min-break-time from configuration: " + e.getMessage());
-            return 500;
+            return 10;
         }
     }
 
@@ -146,6 +147,11 @@ public class BlockListener implements Listener {
      * @param breakTime 玩家实际破坏方块的时间
      */
     private void handleViolation(BlockBreakEvent event, Player player, long breakTime) {
+        // 判定为违规，阻止方块被破坏
         event.setCancelled(true);
-        }
+        // 给玩家发送提示信息
+        player.sendMessage(TextFormat.RED + "检测到方块瞬间破坏，已阻止！");
+        // 在控制台输出玩家违规信息
+        plugin.getLogger().info(TextFormat.YELLOW + player.getName() + " 尝试瞬间破坏方块，实际用时: " + breakTime + " 毫秒，已阻止！");
+    }
 }

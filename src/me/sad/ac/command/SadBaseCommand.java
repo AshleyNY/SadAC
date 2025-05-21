@@ -2,6 +2,7 @@ package me.sad.ac.command;
 
 import cn.nukkit.utils.Config;
 import me.sad.ac.SadAC;
+import me.sad.ac.listener.Reloadable;
 import me.sad.ac.listener.block.BlockListener;
 import me.sad.ac.listener.combat.CombatListener;
 import me.sad.ac.listener.moving.MovingListener;
@@ -12,22 +13,20 @@ import me.sad.ac.listener.server.LagListener;
 
 public class SadBaseCommand extends Command {
     private final SadAC plugin;
-    private final MovingListener movingListener;
-    private final BlockListener blockListener;
-    private final CombatListener combatListener;
-    private final LagListener lagListener;
 
-    public SadBaseCommand(SadAC plugin, MovingListener movingListener, BlockListener blockListener, CombatListener combatListener,LagListener lagListener) {
+
+    public SadBaseCommand(SadAC plugin) {
         super("sadbase", "重新加载反作弊配置", "/sadbase reload");
         this.plugin = plugin;
-        this.movingListener = movingListener;
-        this.blockListener = blockListener;
-        this.combatListener = combatListener;
-        this.lagListener = lagListener;
+        this.setPermission("sadac.admin");
     }
 
     @Override
     public boolean execute(CommandSender sender, String label, String[] args) {
+        if(!sender.hasPermission("sadac.admin")) {
+            sender.sendMessage(TextFormat.RED + "你没有权限使用此命令！");
+            return false;
+        }
         if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
             reload(sender);
             return true;
@@ -45,10 +44,9 @@ public class SadBaseCommand extends Command {
         plugin.saveConfig();
         plugin.reloadConfig();
         Config config = plugin.getCustomConfig();
-        plugin.getCombatListener().reloadConfig();
-        plugin.getMovingListener().reloadConfig();
-        plugin.getAntiInstantBreak().reloadConfig();
-        plugin.getLagListener().reloadConfig();
+        for (Reloadable listener : plugin.getReloadableListeners()) {
+            listener.reloadConfig();
+        }
         sender.sendMessage(TextFormat.GREEN + "反作弊配置已重新加载！");
         plugin.getLogger().info("配置文件重新加载完成");
 

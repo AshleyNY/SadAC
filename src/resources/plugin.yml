@@ -4,3 +4,9 @@ version: 1.0.1
 api: [1.0.5]
 
 author: Sadami
+
+permissions:
+  sadac.admin:
+    description: 允许使用反作弊管理命令
+    default: op
+

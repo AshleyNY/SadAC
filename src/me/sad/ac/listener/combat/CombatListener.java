@@ -8,8 +8,9 @@ import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.utils.Config;
 import cn.nukkit.utils.TextFormat;
 import me.sad.ac.SadAC;
+import me.sad.ac.listener.Reloadable;
 
-public class CombatListener implements Listener {
+public class CombatListener implements Listener, Reloadable {
     private final SadAC plugin;
     private boolean isCheckEnabled;  // 检测是否启用
     private double maxReachDistance; // 最大允许攻击距离
@@ -18,15 +19,16 @@ public class CombatListener implements Listener {
         this.plugin = plugin;
         reloadConfig(); // 初始化配置
     }
-
-    /**
-     * 重新加载配置（与命令的reload功能联动）
-     */
+    @Override
     public void reloadConfig() {
         Config config = plugin.getCustomConfig();
         this.isCheckEnabled = config.getBoolean("checks.reach.enabled", true);
         this.maxReachDistance = config.getDouble("checks.reach.max-distance", 4); // 默认3.5格
     }
+    /**
+     * 重新加载配置（与命令的reload功能联动）
+     */
+
 
     /**
      * 监听玩家攻击事件

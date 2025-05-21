@@ -9,19 +9,27 @@ import me.sad.ac.SadAC;
 public class SadCommand extends Command {
     private final SadAC plugin;
     private final Config config;
+    private final Config BanItemConfig;
 
     public SadCommand(SadAC plugin) {
         // 更新命令描述和用法提示
-        super("sad", "控制反作弊检测的开启、关闭和速度设置", "/sad [fly|speed|fastbreak|wallhack|reach|lag] [on|off|set <value>]");
+        super("sad", "控制反作弊检测的开启、关闭和速度设置", "/sad [fly|speed|fastbreak|wallhack|reach|lag|banitem] [on|off|set|add|remove <value>]");
         this.plugin = plugin;
         this.config = plugin.getCustomConfig();
+        this.BanItemConfig = plugin.getBannedItemConfig();
+        this.setPermission("sadac.admin");
+        this.setPermissionMessage(TextFormat.RED + "你没有权限使用此命令！");
     }
 
     @Override
     public boolean execute(CommandSender sender, String label, String[] args) {
+        if(!sender.hasPermission("sadac.admin")) {
+            sender.sendMessage(TextFormat.RED + "你没有权限使用此命令！");
+            return false;
+        }
         if (args.length < 2) {
             // 更新用法提示，新增 lag 类型
-            sender.sendMessage(TextFormat.RED + "用法: /sad [fly|speed|fastbreak|wallhack|reach|lag] [on|off|set <param> <value>]");
+            sender.sendMessage(TextFormat.RED + "用法: /sad [fly|speed|fastbreak|wallhack|reach|lag|banitem] [on|off|set|add|remove <param> <value>]");
             return false;
         }
 
@@ -47,14 +55,50 @@ public class SadCommand extends Command {
             case "lag":  // 新增：处理 lag 类型命令
                 handleLagCommand(sender, action, args);
                 break;
+            case "banitem":  // 新增：处理 lag 类型命令
+                handleBanItemCommand(sender, action, args);
+                break;
             default:
-                sender.sendMessage(TextFormat.RED + "未知类型: " + type + "，可用类型: fly, speed, fastbreak, wallhack, reach, lag");
+                sender.sendMessage(TextFormat.RED + "未知类型: " + type + "，可用类型: fly, speed, fastbreak, wallhack, reach, lag,banitem");
                 return false;
         }
         plugin.saveConfig();
         return true;
     }
+    private void handleBanItemCommand(CommandSender sender, String action, String[] args) {
 
+        switch (action) {
+            case "add":
+                if (args.length < 3) {
+                    sender.sendMessage(TextFormat.RED + "用法: /sad banItem add <itemId>");
+                    return;
+                }
+                    try {
+                        int itemId = Integer.parseInt(args[2]);
+                        plugin.addBannedItemId(itemId);
+                        sender.sendMessage("成功添加违禁物品ID: " + itemId);
+                        plugin.getBannedItemConfig().save();  // 确保立即保存
+                    } catch (NumberFormatException e) {
+                        sender.sendMessage("无效的物品ID格式");
+
+                }
+                break;
+            case "remove":
+                if (args.length < 3) {
+                    sender.sendMessage(TextFormat.RED + "用法: /sad banItem remove <itemId>");
+                    return;
+                }
+                    try {
+                        int itemId = Integer.parseInt(args[2]);
+                        plugin.removeBannedItemId(itemId);
+                        sender.sendMessage("成功移除违禁物品ID: " + itemId);
+                    } catch (NumberFormatException e) {
+                        sender.sendMessage("无效的物品ID格式");
+                    }
+            default:
+                sender.sendMessage(TextFormat.RED + "未知操作: " + action + "，可用操作: add, remove");
+        }
+        }
     private void handleFlyCommand(CommandSender sender, String action, String[] args) {
         switch (action) {
             case "on":
@@ -217,12 +261,12 @@ public class SadCommand extends Command {
                     String valueStr = args[3];
                     try {
                         switch (param) {
-                            case "redstone-interval":  // 设置高频红石更新间隔（毫秒）
+                            case "redstone":  // 设置高频红石更新间隔（毫秒）
                                 int redstoneInterval = Integer.parseInt(valueStr);
                                 config.set("checks.lag.redstone-update-interval", redstoneInterval);
                                 sender.sendMessage(TextFormat.GREEN + "高频红石更新间隔已设置为: " + redstoneInterval + "ms");
                                 break;
-                            case "max-entities":  // 设置区块最大实体数阈值
+                            case "entities":  // 设置区块最大实体数阈值
                                 int maxEntities = Integer.parseInt(valueStr);
                                 config.set("checks.lag.max-entities-per-chunk", maxEntities);
                                 sender.sendMessage(TextFormat.GREEN + "区块最大实体数阈值已设置为: " + maxEntities);

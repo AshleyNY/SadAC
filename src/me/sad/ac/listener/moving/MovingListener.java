@@ -7,12 +7,13 @@ import cn.nukkit.event.Listener;
 import cn.nukkit.event.player.PlayerMoveEvent;
 import cn.nukkit.utils.Config;
 import me.sad.ac.SadAC;
+import me.sad.ac.listener.Reloadable;
 
 import java.util.HashMap;
 import java.util.Map;
 
 // 实现 Listener 接口，表明这是一个事件监听器类
-public class MovingListener implements Listener {
+public class MovingListener implements Listener, Reloadable {
 
     private final SadAC plugin;
     // 用于存储每个玩家的累计移动距离
@@ -30,6 +31,7 @@ public class MovingListener implements Listener {
         this.plugin = plugin;
         reloadConfig();
     }
+    @Override
     public void reloadConfig() {
         Config config = plugin.getCustomConfig();
         isCheckFlying = config.getBoolean("checks.flight.enabled");

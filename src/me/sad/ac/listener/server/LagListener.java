@@ -14,11 +14,12 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.scheduler.NukkitRunnable;
 import cn.nukkit.utils.Config;
 import me.sad.ac.SadAC;
+import me.sad.ac.listener.Reloadable;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class LagListener implements Listener {
+public class LagListener implements Listener, Reloadable {
 
     private final SadAC plugin;
     private Map<String, Long> redstoneUpdateTimes = new HashMap<>();
@@ -38,7 +39,7 @@ public class LagListener implements Listener {
             }
         }.runTaskTimer(plugin, 0, 600);
     }
-
+@Override
     // 新增：动态重载配置方法
     public void reloadConfig() {
         Config config = plugin.getCustomConfig();
